@@ -1,2 +1,2 @@
-# learning-rspec
-Learning RSpec with Ruby and Ruby on Rails projects
+# Learn TDD and BDD
+Learning TDD and BDD from different courses, tutorials and exercises.
