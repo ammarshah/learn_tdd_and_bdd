@@ -1,18 +1,18 @@
 FactoryBot.define do
 
   factory :invitation do
-    user nil
-    team nil
+    user
+    team
   end
 
   factory :user do
-    email { "MyString" }
+    email { "john@example.com" }
     invited { false }
-    team nil
+    team
   end
 
   factory :team do
-    name { "MyString" }
+    name { "Backend Devs" }
   end
 
   factory :magazine do

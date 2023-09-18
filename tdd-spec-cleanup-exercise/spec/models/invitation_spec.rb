@@ -1,37 +1,39 @@
 require "rails_helper"
 
+RSpec.configure do |c|
+  c.include Helpers::InvitationHelper
+end
+
 RSpec.describe Invitation do
-  let(:invitation) { build(:invitation, team: team, user: new_user) }
-  let(:new_user) { create(:user, email: "rookie@example.com") }
-  let(:team) { create(:team, name: "A fine team") }
-  let(:team_owner) { create(:user) }
-
-  before do
-    team.update!(owner: team_owner)
-    team_owner.update!(team: team)
-  end
-
   describe "callbacks" do
     describe "after_save" do
       context "with valid data" do
         it "invites the user" do
-          invitation.save
+          new_user = create(:user)
+          invitation_for_new_user = build(:invitation, user: new_user, team: new_user.team)
+
+          invitation_for_new_user.save
+
           expect(new_user).to be_invited
         end
       end
 
       context "with invalid data" do
-        before do
-          invitation.team = nil
-          invitation.save
-        end
-
         it "does not save the invitation" do
-          expect(invitation).not_to be_valid
-          expect(invitation).to be_new_record
+          invalid_invitation = build(:invitation, team: nil)
+
+          invalid_invitation.save
+
+          expect(invalid_invitation).not_to be_valid
+          expect(invalid_invitation).to be_new_record
         end
 
         it "does not mark the user as invited" do
+          new_user = create(:user)
+          invalid_invitation_for_new_user = build(:invitation, user: new_user, team: nil)
+
+          invalid_invitation_for_new_user.save
+
           expect(new_user).not_to be_invited
         end
       end
@@ -40,42 +42,55 @@ RSpec.describe Invitation do
 
   describe "#event_log_statement" do
     context "when the record is saved" do
-      before do
-        invitation.save
-      end
+      it "includes the name of the team" do
+        invitation = build_invitation_with(team_name: "A fine team")
 
-      it "include the name of the team" do
         log_statement = invitation.event_log_statement
+
         expect(log_statement).to include("A fine team")
       end
 
-      it "include the email of the invitee" do
+      it "includes the email of the invitee" do
+        invitation = build_invitation_with(user_email: "rookie@example.com")
+
         log_statement = invitation.event_log_statement
+
         expect(log_statement).to include("rookie@example.com")
       end
     end
 
     context "when the record is not saved but valid" do
       it "includes the name of the team" do
+        invitation = build_invitation_with(team_name: "A fine team")
+
         log_statement = invitation.event_log_statement
+
         expect(log_statement).to include("A fine team")
       end
 
       it "includes the email of the invitee" do
+        invitation = build_invitation_with(user_email: "rookie@example.com")
+
         log_statement = invitation.event_log_statement
+
         expect(log_statement).to include("rookie@example.com")
       end
 
       it "includes the word 'PENDING'" do
+        invitation = build(:invitation)
+
         log_statement = invitation.event_log_statement
+
         expect(log_statement).to include("PENDING")
       end
     end
 
     context "when the record is not saved and not valid" do
       it "includes INVALID" do
-        invitation.user = nil
-        log_statement = invitation.event_log_statement
+        invalid_invitation = build(:invitation, user: nil)
+
+        log_statement = invalid_invitation.event_log_statement
+
         expect(log_statement).to include("INVALID")
       end
     end
