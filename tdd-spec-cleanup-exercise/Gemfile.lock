@@ -104,8 +104,6 @@ GEM
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
     ffi (1.15.5)
-    figaro (1.2.0)
-      thor (>= 0.14.0, < 2)
     flutie (2.2.0)
     formulaic (0.4.1)
       activesupport
@@ -302,7 +300,6 @@ DEPENDENCIES
   delayed_job_active_record
   dotenv-rails
   factory_bot_rails
-  figaro
   flutie
   formulaic
   high_voltage

@@ -3,7 +3,7 @@
 *.swo
 *.swp
 /.bundle
-/.env.local
+/.env
 /coverage/*
 /db/*.sqlite3
 /log/*
@@ -11,4 +11,3 @@
 /public/assets
 /tags
 /tmp/*
-/config/application.yml
